@@ -1,0 +1,249 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard · StockWise{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+
+    <!-- Welcome header -->
+    <section class="dashboard-hero mb-4">
+        <div>
+            <span class="dashboard-eyebrow">STOCKWISE OVERVIEW</span>
+            <h1 class="dashboard-title">Dashboard</h1>
+            <p class="dashboard-subtitle mb-0">
+                Your business at a glance. Here's your latest overview.
+            </p>
+        </div>
+        <a class="btn btn-primary dashboard-main-action"
+           href="{% url 'sale_create' %}">
+            ＋ Create New Bill
+        </a>
+    </section>
+
+    <!-- Business summary -->
+    <section class="row g-3 mb-4">
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric dashboard-metric">
+                <div class="metric-top">
+                    <span class="metric-label">Total Products</span>
+                    <span class="metric-icon">▦</span>
+                </div>
+                <strong class="metric-value">{{ product_count }}</strong>
+                <a class="metric-link" href="/products/">
+                    Manage Stock →
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric dashboard-metric">
+                <div class="metric-top">
+                    <span class="metric-label">Customers</span>
+                    <span class="metric-icon">♙</span>
+                </div>
+                <strong class="metric-value">{{ customer_count }}</strong>
+                <a class="metric-link" href="/customers/">
+                    View Customers →
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric dashboard-metric">
+                <div class="metric-top">
+                    <span class="metric-label">Total Invoices</span>
+                    <span class="metric-icon">▤</span>
+                </div>
+                <strong class="metric-value">{{ sales_count }}</strong>
+                <a class="metric-link" href="/billing/">
+                    View Billing →
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric dashboard-metric dashboard-sales-metric">
+                <div class="metric-top">
+                    <span class="metric-label">Sales Today</span>
+                    <span class="metric-icon">₹</span>
+                </div>
+                <strong class="metric-value">
+                    ₹{{ sales_today|floatformat:2 }}
+                </strong>
+                <a class="metric-link" href="/reports/">
+                    View Reports →
+                </a>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Quick actions -->
+    <section class="panel dashboard-actions mb-4">
+        <div class="dashboard-section-heading">
+            <div>
+                <h2 class="h5 mb-1">Quick Actions</h2>
+                <p class="text-muted mb-0">
+                    Common tasks, right at your fingertips.
+                </p>
+            </div>
+        </div>
+
+        <div class="quick-actions-grid">
+            <a class="quick-action" href="{% url 'sale_create' %}">
+                <span class="quick-action-icon">＋</span>
+                <span class="quick-action-text">
+                    <strong>Create New Bill</strong>
+                    <small>Record a customer sale</small>
+                </span>
+                <span class="quick-action-arrow">→</span>
+            </a>
+
+            <a class="quick-action" href="/products/">
+                <span class="quick-action-icon">▦</span>
+                <span class="quick-action-text">
+                    <strong>Manage Products</strong>
+                    <small>Review your inventory</small>
+                </span>
+                <span class="quick-action-arrow">→</span>
+            </a>
+
+            <a class="quick-action" href="/customers/">
+                <span class="quick-action-icon">♙</span>
+                <span class="quick-action-text">
+                    <strong>Customers</strong>
+                    <small>View customer records</small>
+                </span>
+                <span class="quick-action-arrow">→</span>
+            </a>
+
+            <a class="quick-action" href="/reports/">
+                <span class="quick-action-icon">▥</span>
+                <span class="quick-action-text">
+                    <strong>Sales Reports</strong>
+                    <small>Review business activity</small>
+                </span>
+                <span class="quick-action-arrow">→</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Inventory and invoice tables -->
+    <section class="row g-4">
+
+        <div class="col-12 col-xl-6">
+            <div class="panel dashboard-data-panel h-100">
+                <div class="dashboard-section-heading">
+                    <div>
+                        <h2 class="h5 mb-1">Low Stock Alerts</h2>
+                        <p class="text-muted mb-0">
+                            Products that may need restocking.
+                        </p>
+                    </div>
+                    <a class="section-link" href="/products/">
+                        All Products →
+                    </a>
+                </div>
+
+                {% if low_stock %}
+                <div class="table-responsive">
+                    <table class="table dashboard-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>SKU</th>
+                                <th class="text-end">Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in low_stock %}
+                            <tr>
+                                <td class="fw-semibold">{{ p.name }}</td>
+                                <td class="text-muted">{{ p.sku }}</td>
+                                <td class="text-end">
+                                    <span class="stock-warning">
+                                        {{ p.quantity }} left
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="dashboard-empty-state">
+                    <span class="empty-state-icon">✓</span>
+                    <strong>Stock looks good!</strong>
+                    <p class="text-muted mb-0">
+                        No low-stock products to report.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-6">
+            <div class="panel dashboard-data-panel h-100">
+                <div class="dashboard-section-heading">
+                    <div>
+                        <h2 class="h5 mb-1">Recent Invoices</h2>
+                        <p class="text-muted mb-0">
+                            Your latest recorded sales.
+                        </p>
+                    </div>
+                    <a class="section-link" href="/billing/">
+                        All Invoices →
+                    </a>
+                </div>
+
+                {% if recent_sales %}
+                <div class="table-responsive">
+                    <table class="table dashboard-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Invoice</th>
+                                <th>Customer</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sale in recent_sales %}
+                            <tr>
+                                <td>
+                                    <a class="invoice-link"
+                                       href="{% url 'sale_detail' sale.pk %}">
+                                        {{ sale.invoice_number }}
+                                    </a>
+                                </td>
+                                <td>{{ sale.customer|default:"Walk-in" }}</td>
+                                <td class="text-end fw-semibold">
+                                    ₹{{ sale.grand_total|floatformat:2 }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="dashboard-empty-state">
+                    <span class="empty-state-icon">▤</span>
+                    <strong>No invoices yet</strong>
+                    <p class="text-muted mb-3">
+                        Your sales will appear here after your first bill.
+                    </p>
+                    <a class="btn btn-primary btn-sm"
+                       href="{% url 'sale_create' %}">
+                        Create First Bill
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </section>
+
+</div>
+{% endblock %}
+

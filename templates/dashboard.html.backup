@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block title %}Dashboard · StockWise{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><div><h1 class="h2 mb-1">Dashboard</h1><p class="text-muted mb-0">Your inventory at a glance.</p></div><a class="btn btn-primary" href="{% url 'sale_create' %}">＋ New bill</a></div>
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3"><div class="metric"><span>Products</span><strong>{{ product_count }}</strong><a href="/products/">Manage stock →</a></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="metric"><span>Customers</span><strong>{{ customer_count }}</strong><a href="/customers/">View customers →</a></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="metric"><span>Total invoices</span><strong>{{ sales_count }}</strong><a href="/billing/">View billing →</a></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="metric"><span>Sales today</span><strong>₹{{ sales_today|floatformat:2 }}</strong><a href="/reports/">Open reports →</a></div></div>
+</div>
+<div class="row g-4"><div class="col-lg-6"><div class="panel"><div class="d-flex justify-content-between"><h2 class="h5">Low stock alerts</h2><a href="/products/">All products</a></div>
+{% if low_stock %}<div class="table-responsive"><table class="table align-middle"><thead><tr><th>Product</th><th>SKU</th><th>Stock</th></tr></thead><tbody>{% for p in low_stock %}<tr><td>{{ p.name }}</td><td>{{ p.sku }}</td><td><span class="badge text-bg-warning">{{ p.quantity }}</span></td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="text-muted">No low-stock products. Nice!</p>{% endif %}</div></div>
+<div class="col-lg-6"><div class="panel"><h2 class="h5">Recent invoices</h2>{% if recent_sales %}<div class="table-responsive"><table class="table"><thead><tr><th>Invoice</th><th>Customer</th><th>Total</th></tr></thead><tbody>{% for sale in recent_sales %}<tr><td><a href="{% url 'sale_detail' sale.pk %}">{{ sale.invoice_number }}</a></td><td>{{ sale.customer|default:"Walk-in" }}</td><td>₹{{ sale.grand_total|floatformat:2 }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="text-muted">Invoices will appear here after your first sale.</p>{% endif %}</div></div></div>
+{% endblock %}
